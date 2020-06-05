@@ -1,0 +1,56 @@
+pipeline {
+    agent any
+    environment {
+        VARIABLE_X = 'Usb cali'
+            PROJECT_NAME = 'PIPELINE-PROYECT'
+    }
+    stages {
+        stage('Etapa 0') {
+            steps {
+                echo "Proyecto ${PROJECT_NAME}"
+            }
+        }
+        stage('Etapa 1') {
+            steps {
+                bat 'mvn -f bank validate'
+            }
+        }
+        stage('Etapa 2') {
+            steps {
+                bat 'mvn -f bank install'
+            }
+        }
+        stage('Etapa 3') {
+            steps {
+                bat 'mvn -f bank package'
+            }
+        }
+        stage('Etapa 4') {
+            steps {
+                bat 'java -jar  bank/target/bank-0.0.1.jar'
+            }
+        }
+    }
+    post {
+        aborted {
+            echo "BUILD ABORTED"
+        }
+        success {
+            slackSend botUser: true, 
+                  channel: '#proyecto', 
+                  color: '#00ff00', 
+                  message: 'Se termina el proceso satisfactoriamente', 
+                  tokenCredentialId: 'myToken'
+        }
+        unstable {
+            echo "BUILD UNSTABLE"
+        }
+        failure {
+           slackSend botUser: true, 
+                  channel: '#proyecto', 
+                  color: '#00ff00', 
+                  message: 'Se termina el proceso con errores', 
+                  tokenCredentialId: 'myToken'
+        }
+    }
+}
