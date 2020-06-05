@@ -25,11 +25,7 @@ pipeline {
                 bat 'mvn -f bank package'
             }
         }
-        stage('Etapa 4') {
-            steps {
-                bat 'java -jar  bank/target/bank-0.0.1.jar'
-            }
-        }
+        
     }
     post {
         aborted {
